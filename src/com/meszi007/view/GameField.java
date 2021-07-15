@@ -1,5 +1,6 @@
 package com.meszi007.view;
 
+import com.meszi007.model.GravityPoint;
 import com.meszi007.model.Line;
 import com.meszi007.model.ModelCore;
 import com.meszi007.model.Point;
@@ -14,12 +15,9 @@ import java.util.Objects;
 import java.util.Optional;
 
 public class GameField extends JPanel {
-    enum MouseMode{ROAD_PLACING_0,ROAD_PLACING_START_PLACED,DEMOLISHING,NONE};
+    enum MouseMode{ROAD_PLACING_0,ROAD_PLACING_START_PLACED,DEMOLISHING,NONE}
     private final ModelCore modelCore;
-    //private boolean roadStarted=false;
     private MouseMode mode=MouseMode.NONE;
-    private Point startPoint=null;
-    private Point endPoint=null;
 
     public GameField() {
         modelCore=new ModelCore();
@@ -36,20 +34,21 @@ public class GameField extends JPanel {
                             break;
                         case ROAD_PLACING_START_PLACED:
                             finishRoad(e.getX(), e.getY());
-                            startPoint = null;
-                            endPoint = null;
                             modelCore.temporaryRoad = null;
                             mode = MouseMode.NONE;
                             break;
                         case NONE:
-                            if(findObjectInLocation(e.getX(), e.getY()).isPresent()){
-                                System.out.println("Van itt valami");
+                            if(findGPInLocation(e.getX(), e.getY()).isPresent()){
+                                System.out.println("Van itt egy GP");
+                            }else if(findRoadInLocation(e.getX(), e.getY()).isPresent()){
+                                System.out.println("Van itt egy ut");
                             }else{
                                 System.out.println("Nincs itt semmi");
                             }
+
                             break;
                         case DEMOLISHING:
-                            Optional<Road> opt=findObjectInLocation(e.getX(), e.getY());
+                            Optional<Road> opt= findRoadInLocation(e.getX(), e.getY());
                             if(opt.isPresent()){
                                 modelCore.roads.remove(opt.get());
                                 System.out.println("A kivalasztott elem torolve");
@@ -63,8 +62,6 @@ public class GameField extends JPanel {
                     }
                 }else if (e.getButton()==MouseEvent.BUTTON3) {
                     if(mode==MouseMode.ROAD_PLACING_0 || mode==MouseMode.ROAD_PLACING_START_PLACED){
-                        startPoint=null;
-                        endPoint=null;
                         modelCore.temporaryRoad=null;
                         mode=MouseMode.NONE;
                     }
@@ -87,26 +84,66 @@ public class GameField extends JPanel {
         setVisible(true);
     }
 
-    private Optional<Road> findObjectInLocation(final int x, final int y) {
+    private Optional<Road> findRoadInLocation(final int x, final int y) {
         return modelCore.roads.stream().filter(r -> r.includePoint(x,y)).findFirst();
     }
 
+    private Optional<Road> findGPInLocation(final int x, final int y) {
+        return modelCore.roads.stream().filter(r -> new GravityPoint(r.getBaseLine().start).includesPoint(x,y) ||
+                new GravityPoint(r.getBaseLine().end).includesPoint(x,y) ).findFirst();
+    }
+
     private void startRoad(int x, int y){
-        startPoint= new Point(x,y);
-        endPoint= new Point(x,y);
+        Point startPoint=null;
+        Road r=null;
+        for(int i=0;i<modelCore.roads.size();i++){
+            r=modelCore.roads.get(i);
+            if(new GravityPoint(r.getBaseLine().start).includesPoint(x,y)){
+                startPoint= r.getBaseLine().start;break;
+            }else if(new GravityPoint(r.getBaseLine().end).includesPoint(x,y)){
+                startPoint= r.getBaseLine().end;break;
+            }
+        }
+
+        if(Objects.isNull(startPoint)){
+            startPoint=new Point(x,y);
+            modelCore.temporaryRoad=new Road(new Line(startPoint, startPoint));
+        }else{
+            modelCore.temporaryRoad=new Road(new Line(startPoint, startPoint));
+            modelCore.createJunction(modelCore.temporaryRoad,r);
+            System.out.println("Road start connected");
+        }
         //System.out.println("Road started in point: " + startPoint);
     }
 
     private void changeTemporaryShadow(int x, int y){
-        endPoint=new Point(x,y);
-        Line baseLine=new Line(startPoint,endPoint);
-        modelCore.temporaryRoad=new Road(baseLine);
+        Point endPoint=new Point(x,y);
+        modelCore.temporaryRoad.changeBaseline(new Line(modelCore.temporaryRoad.getBaseLine().start,endPoint));
     }
 
     private void finishRoad(int x, int y){
-        endPoint=new Point(x,y);
-        Line baseLine=new Line(startPoint,endPoint);
-        modelCore.roads.add(new Road(baseLine));
+        //search for junction
+        Point endPoint=null;
+        Road r=null;
+        for(int i=0;i<modelCore.roads.size();i++){
+            r=modelCore.roads.get(i);
+            if(new GravityPoint(r.getBaseLine().start).includesPoint(x,y)){
+                endPoint= r.getBaseLine().start;break;
+            }else if(new GravityPoint(r.getBaseLine().end).includesPoint(x,y)){
+                endPoint=r.getBaseLine().end;break;
+            }
+        }
+
+        if(Objects.isNull(endPoint)){
+            endPoint=new Point(x,y);
+            modelCore.temporaryRoad.changeBaseline(new Line(modelCore.temporaryRoad.getBaseLine().start,endPoint));
+        }else{
+            modelCore.temporaryRoad.changeBaseline(new Line(modelCore.temporaryRoad.getBaseLine().start,endPoint));
+            modelCore.createJunction(modelCore.temporaryRoad,r);
+            System.out.println("Road end connected");
+        }
+
+        modelCore.roads.add(modelCore.temporaryRoad);
 
         //System.out.println("Road ended in point: " + endPoint);
     }
@@ -130,12 +167,15 @@ public class GameField extends JPanel {
     }
 
     @Override
-    protected void paintComponent(Graphics graphics) {
+    protected void paintComponent(Graphics g) {
+        Graphics2D graphics = (Graphics2D) g;
         super.paintComponent(graphics);
         //graphics.drawLine(10,10,40,40);
         //System.out.println(modelCore.roads.size());
         for(Road r : modelCore.roads){
             r.paint(graphics);
+            GravityPoint.paintPointAsGravityPoint(graphics,r.getBaseLine().start);
+            GravityPoint.paintPointAsGravityPoint(graphics,r.getBaseLine().end);
         }
         if(Objects.nonNull(modelCore.temporaryRoad)){
             modelCore.temporaryRoad.paint(graphics);

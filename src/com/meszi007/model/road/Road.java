@@ -1,22 +1,26 @@
 package com.meszi007.model.road;
 
 import com.meszi007.model.Line;
+import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Path2D;
-import java.util.List;
 
 public class Road {
-    public List<RoadSlice> roadSlices;
-    public Line baseLine;
-    public Line leftEdgeLine;
-    public Line rightEdgeLine;
-    public static int BASIC_ROAD_WIDTH =5;
-    public Color color= Color.black;
+    public static final int BASIC_ROAD_WIDTH =5;
+    public static final Color color= Color.black;
 
-    public Road(Line baseLine){
+    private Line baseLine;
+    private Line leftEdgeLine;
+    private Line rightEdgeLine;
+
+    public Road(@NotNull Line baseLine){
         this.baseLine=baseLine;
+        setupEdges();
+    }
+
+    private void setupEdges(){
         double vec_x=baseLine.end.x-baseLine.start.x;
         double vec_y=baseLine.end.y-baseLine.start.y;
         double perp_x=-1*vec_y;
@@ -26,6 +30,11 @@ public class Road {
         perp_y*=ratio_to_norm_with;
         leftEdgeLine = baseLine.getTransformBy(perp_x,perp_y);
         rightEdgeLine= baseLine.getTransformBy(-1*perp_x,-1*perp_y);
+    }
+
+    public void changeBaseline(@NotNull Line baseLine){
+        this.baseLine=baseLine;
+        setupEdges();
     }
 
     public boolean includePoint(int x, int y){
@@ -74,10 +83,21 @@ public class Road {
         g.fill(polygon);
     }
 
+    public Line getLeftEdgeLine() {
+        return leftEdgeLine;
+    }
+
+    public Line getRightEdgeLine() {
+        return rightEdgeLine;
+    }
+
+    public Line getBaseLine() {
+        return baseLine;
+    }
+
     @Override
     public String toString() {
         return "Road{" +
-                "roadSlices=" + roadSlices +
                 ", leftEdgeLine=" + leftEdgeLine +
                 ", rightEdgeLine=" + rightEdgeLine +
                 '}';
