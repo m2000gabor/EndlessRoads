@@ -11,6 +11,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.util.Objects;
+import java.util.Optional;
 
 public class GameField extends JPanel {
     enum MouseMode{ROAD_PLACING_0,ROAD_PLACING_START_PLACED,DEMOLISHING,NONE};
@@ -28,15 +29,37 @@ public class GameField extends JPanel {
         addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
                 if(e.getButton()==MouseEvent.BUTTON1){
-                    if(mode==MouseMode.ROAD_PLACING_0){
-                        startRoad(e.getX(),e.getY());
-                        mode=MouseMode.ROAD_PLACING_START_PLACED;
-                    }else if(mode==MouseMode.ROAD_PLACING_START_PLACED){
-                        finishRoad(e.getX(),e.getY());
-                        startPoint=null;
-                        endPoint=null;
-                        modelCore.temporaryRoad=null;
-                        mode=MouseMode.NONE;
+                    switch (mode) {
+                        case ROAD_PLACING_0:
+                            startRoad(e.getX(), e.getY());
+                            mode = MouseMode.ROAD_PLACING_START_PLACED;
+                            break;
+                        case ROAD_PLACING_START_PLACED:
+                            finishRoad(e.getX(), e.getY());
+                            startPoint = null;
+                            endPoint = null;
+                            modelCore.temporaryRoad = null;
+                            mode = MouseMode.NONE;
+                            break;
+                        case NONE:
+                            if(findObjectInLocation(e.getX(), e.getY()).isPresent()){
+                                System.out.println("Van itt valami");
+                            }else{
+                                System.out.println("Nincs itt semmi");
+                            }
+                            break;
+                        case DEMOLISHING:
+                            Optional<Road> opt=findObjectInLocation(e.getX(), e.getY());
+                            if(opt.isPresent()){
+                                modelCore.roads.remove(opt.get());
+                                System.out.println("A kivalasztott elem torolve");
+
+                            }else{
+                                System.out.println("Nincs mit torolni");
+                            }
+                            mode=MouseMode.NONE;
+                            break;
+
                     }
                 }else if (e.getButton()==MouseEvent.BUTTON3) {
                     if(mode==MouseMode.ROAD_PLACING_0 || mode==MouseMode.ROAD_PLACING_START_PLACED){
@@ -64,6 +87,10 @@ public class GameField extends JPanel {
         setVisible(true);
     }
 
+    private Optional<Road> findObjectInLocation(final int x, final int y) {
+        return modelCore.roads.stream().filter(r -> r.includePoint(x,y)).findFirst();
+    }
+
     private void startRoad(int x, int y){
         startPoint= new Point(x,y);
         endPoint= new Point(x,y);
@@ -88,6 +115,12 @@ public class GameField extends JPanel {
         switch (in){
             case NEW_BASIC_LANE:
                 if(mode==MouseMode.NONE){mode=MouseMode.ROAD_PLACING_0;
+                }else{
+                    System.err.println("It's not in NONE mode, but only NONE mode can be changed!");
+                }
+                break;
+            case DEMOLISH:
+                if(mode==MouseMode.NONE){mode=MouseMode.DEMOLISHING;
                 }else{
                     System.err.println("It's not in NONE mode, but only NONE mode can be changed!");
                 }

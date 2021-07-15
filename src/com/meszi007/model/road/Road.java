@@ -4,46 +4,19 @@ import com.meszi007.model.Line;
 
 import java.awt.*;
 import java.awt.geom.GeneralPath;
+import java.awt.geom.Path2D;
 import java.util.List;
 
 public class Road {
     public List<RoadSlice> roadSlices;
+    public Line baseLine;
     public Line leftEdgeLine;
     public Line rightEdgeLine;
     public static int BASIC_ROAD_WIDTH =5;
     public Color color= Color.black;
 
-    public Road(Line leftEdgeLine, Line rightEdgeLine) {
-        this.leftEdgeLine = leftEdgeLine;
-        this.rightEdgeLine = rightEdgeLine;
-    }
-    public Road(Line leftEdgeLine, Line rightEdgeLine,Color c) {
-        this.leftEdgeLine = leftEdgeLine;
-        this.rightEdgeLine = rightEdgeLine;
-        this.color=c;
-    }
-
-    /*
     public Road(Line baseLine){
-        double a;
-        double eltolasMerteke;
-        if(baseLine.getSlope()==0){
-            //a=1;
-            eltolasMerteke=BASIC_ROAD_WIDTH;
-            //System.out.println("Eltolas merteke: "+eltolasMerteke );
-            leftEdgeLine = baseLine.getTransformBy(0,eltolasMerteke);
-            rightEdgeLine= baseLine.getTransformBy(0,-1*eltolasMerteke);
-        }else{
-            a=-1/baseLine.getSlope();
-            //double b=baseLine.end.y-a*baseLine.end.x;
-            eltolasMerteke=Math.sqrt( (double) BASIC_ROAD_WIDTH / (1+Math.pow(a,2)) );
-            //System.out.println("Eltolas merteke: "+eltolasMerteke );
-            leftEdgeLine = baseLine.getTransformBy(eltolasMerteke,eltolasMerteke*a);
-            rightEdgeLine= baseLine.getTransformBy(-1*eltolasMerteke,-1*eltolasMerteke*a);
-        }
-    }
-    */
-    public Road(Line baseLine){
+        this.baseLine=baseLine;
         double vec_x=baseLine.end.x-baseLine.start.x;
         double vec_y=baseLine.end.y-baseLine.start.y;
         double perp_x=-1*vec_y;
@@ -55,10 +28,19 @@ public class Road {
         rightEdgeLine= baseLine.getTransformBy(-1*perp_x,-1*perp_y);
     }
 
-    /*
-    public Dimension getPreferredSize() {
-        return new Dimension((int) Point.getDistance(leftEdgeLine.start,leftEdgeLine.end),(int) Point.getDistance(rightEdgeLine.start,rightEdgeLine.end));
-    }*/
+    public boolean includePoint(int x, int y){
+        return getAsPath().contains(new Point(x,y));
+    };
+
+    private Path2D getAsPath(){
+        Path2D.Float p = new Path2D.Float();
+        p.moveTo(leftEdgeLine.start.x,leftEdgeLine.start.y);
+        p.lineTo(leftEdgeLine.end.x, leftEdgeLine.end.y);
+        p.lineTo(rightEdgeLine.end.x,rightEdgeLine.end.y);
+        p.lineTo(rightEdgeLine.start.x,rightEdgeLine.start.y);
+        p.closePath();
+        return p;
+    }
 
     private boolean hasNoWidth(){
         return leftEdgeLine.start.x == rightEdgeLine.start.x && leftEdgeLine.end.x==rightEdgeLine.end.x &&

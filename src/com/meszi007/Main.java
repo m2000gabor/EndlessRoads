@@ -2,11 +2,25 @@ package com.meszi007;
 
 import com.meszi007.view.MainWindow;
 
+import javax.swing.*;
+
 public class Main {
 
     public static void main(String[] args) {
-        //Line l= new Line(1,2,3,3);
-        //System.out.println("Egyenes egyenlete: " + l.getSlope() + "x+"+ l.getBalance());
-	    MainWindow m= new MainWindow();
+
+        try {
+            UIManager.setLookAndFeel(
+                    UIManager.getSystemLookAndFeelClassName());
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (UnsupportedLookAndFeelException e) {
+            e.printStackTrace();
+        }
+
+        MainWindow m= new MainWindow();
     }
 }
