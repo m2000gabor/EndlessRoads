@@ -13,8 +13,10 @@ import java.awt.event.MouseMotionAdapter;
 import java.util.Objects;
 
 public class GameField extends JPanel {
+    enum MouseMode{ROAD_PLACING_0,ROAD_PLACING_START_PLACED,DEMOLISHING,NONE};
     private final ModelCore modelCore;
-    private boolean roadStarted=false;
+    //private boolean roadStarted=false;
+    private MouseMode mode=MouseMode.NONE;
     private Point startPoint=null;
     private Point endPoint=null;
 
@@ -26,20 +28,24 @@ public class GameField extends JPanel {
         addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
                 if(e.getButton()==MouseEvent.BUTTON1){
-                    if(!roadStarted){
+                    if(mode==MouseMode.ROAD_PLACING_0){
                         startRoad(e.getX(),e.getY());
-                    }else{
+                        mode=MouseMode.ROAD_PLACING_START_PLACED;
+                    }else if(mode==MouseMode.ROAD_PLACING_START_PLACED){
                         finishRoad(e.getX(),e.getY());
                         startPoint=null;
                         endPoint=null;
                         modelCore.temporaryRoad=null;
+                        mode=MouseMode.NONE;
                     }
-                    roadStarted=!roadStarted;
-                }else if (e.getButton()==MouseEvent.BUTTON3){
-                    roadStarted=false;
-                    startPoint=null;
-                    endPoint=null;
-                    modelCore.temporaryRoad=null;
+                }else if (e.getButton()==MouseEvent.BUTTON3) {
+                    if(mode==MouseMode.ROAD_PLACING_0 || mode==MouseMode.ROAD_PLACING_START_PLACED){
+                        startPoint=null;
+                        endPoint=null;
+                        modelCore.temporaryRoad=null;
+                        mode=MouseMode.NONE;
+                    }
+
                 }
 
             }
@@ -49,7 +55,7 @@ public class GameField extends JPanel {
             @Override
             public void mouseMoved(MouseEvent e) {
                 super.mouseMoved(e);
-                if(roadStarted){
+                if(mode==MouseMode.ROAD_PLACING_START_PLACED){
                     changeTemporaryShadow(e.getX(), e.getY());
                 }
             }
@@ -124,6 +130,14 @@ public class GameField extends JPanel {
         repaint();
     }*/
 
+    public void userInput(MainWindow.MenuInput in){
+        switch (in){
+            case NEW_BASIC_LANE:
+                if(mode==MouseMode.NONE){mode=MouseMode.ROAD_PLACING_0;}
+                break;
+            default: break;
+        }
+    }
 
     @Override
     protected void paintComponent(Graphics graphics) {

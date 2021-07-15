@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class MainWindow extends JFrame {
+    public enum MenuInput{NEW_BASIC_LANE,EDGE};
     GameField field;
 
     public MainWindow() throws HeadlessException {
@@ -15,6 +16,12 @@ public class MainWindow extends JFrame {
         JMenu newItem=new JMenu("Add item");
         JMenuItem roadEdgeMenuItem=new JMenuItem("Edge");
         JMenuItem basicRoadLaneMenuItem=new JMenuItem("Basic Lane");
+        basicRoadLaneMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                field.userInput(MenuInput.NEW_BASIC_LANE);
+            }
+        });
         menuBar.add(newItem);
         newItem.add(roadEdgeMenuItem);
         newItem.add(basicRoadLaneMenuItem);
