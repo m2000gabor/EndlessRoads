@@ -10,7 +10,7 @@ public class Road {
     public List<RoadSlice> roadSlices;
     public Line leftEdgeLine;
     public Line rightEdgeLine;
-    public static int BASIC_ROAD_WIDTH =30;
+    public static int BASIC_ROAD_WIDTH =5;
     public Color color= Color.black;
 
     public Road(Line leftEdgeLine, Line rightEdgeLine) {
@@ -23,6 +23,7 @@ public class Road {
         this.color=c;
     }
 
+    /*
     public Road(Line baseLine){
         double a;
         double eltolasMerteke;
@@ -41,6 +42,18 @@ public class Road {
             rightEdgeLine= baseLine.getTransformBy(-1*eltolasMerteke,-1*eltolasMerteke*a);
         }
     }
+    */
+    public Road(Line baseLine){
+        double vec_x=baseLine.end.x-baseLine.start.x;
+        double vec_y=baseLine.end.y-baseLine.start.y;
+        double perp_x=-1*vec_y;
+        double perp_y=vec_x;
+        double ratio_to_norm_with = BASIC_ROAD_WIDTH/Math.sqrt(Math.pow(perp_x,2)+Math.pow(perp_y,2));
+        perp_x*=ratio_to_norm_with;
+        perp_y*=ratio_to_norm_with;
+        leftEdgeLine = baseLine.getTransformBy(perp_x,perp_y);
+        rightEdgeLine= baseLine.getTransformBy(-1*perp_x,-1*perp_y);
+    }
 
     /*
     public Dimension getPreferredSize() {
@@ -53,6 +66,7 @@ public class Road {
     }
 
     private void drawAsLine(Graphics2D g){
+        g.setColor(Color.RED);
         g.drawLine(leftEdgeLine.start.x,leftEdgeLine.start.y,leftEdgeLine.end.x,leftEdgeLine.end.y);
     }
 
