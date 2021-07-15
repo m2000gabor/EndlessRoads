@@ -14,6 +14,26 @@ public class Line {
         this.end = end;
     }
 
+    public Line ifMove90(int l){
+        return new Line(start.ifMove90(l),end.ifMove90(l));
+    }
+
+    public Line getTransformBy(double x, double y){
+        return new Line(start.getTransformBy(x,y),end.getTransformBy(x,y));
+    }
+
+    /**
+     *
+     * @return meredekség
+     */
+    public double getSlope(){
+        if(end.y - start.y == 0){return 0;}
+        return ((double)( end.y - start.y) )/ (end.x - start.x);
+    }
+
+    public double getBalance(){
+        return start.y- (getSlope() * start.x);
+    }
 
     @Override
     public String toString() {
