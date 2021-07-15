@@ -1,66 +1,140 @@
 package com.meszi007.view;
 
+import com.meszi007.model.Line;
 import com.meszi007.model.ModelCore;
 import com.meszi007.model.Point;
 import com.meszi007.model.road.Road;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.geom.GeneralPath;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
+import java.util.Objects;
 
 public class GameField extends JPanel {
     private final ModelCore modelCore;
+    private boolean roadStarted=false;
+    private Point startPoint=null;
+    private Point endPoint=null;
 
     public GameField() {
         modelCore=new ModelCore();
 
         setPreferredSize(new Dimension(500,500));
+
+        addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent e) {
+                if(e.getButton()==MouseEvent.BUTTON1){
+                    if(!roadStarted){
+                        startRoad(e.getX(),e.getY());
+                    }else{
+                        finishRoad(e.getX(),e.getY());
+                        startPoint=null;
+                        endPoint=null;
+                        modelCore.temporaryRoad=null;
+                    }
+                    roadStarted=!roadStarted;
+                }else if (e.getButton()==MouseEvent.BUTTON3){
+                    roadStarted=false;
+                    startPoint=null;
+                    endPoint=null;
+                    modelCore.temporaryRoad=null;
+                }
+
+            }
+        });
+
+        addMouseMotionListener(new MouseMotionAdapter() {
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                super.mouseMoved(e);
+                if(roadStarted){
+                    changeTemporaryShadow(e.getX(), e.getY());
+                }
+            }
+        });
+
         setVisible(true);
     }
+
+    private void startRoad(int x, int y){
+        startPoint= new Point(x,y);
+        endPoint= new Point(x,y);
+        System.out.println("Road started in point: " + startPoint);
+    }
+
+    private void changeTemporaryShadow(int x, int y){
+        endPoint=new Point(x,y);
+        Line baseLine=new Line(startPoint,endPoint);
+        modelCore.temporaryRoad=new Road(baseLine);
+    }
+
+    private void finishRoad(int x, int y){
+        endPoint=new Point(x,y);
+        Line baseLine=new Line(startPoint,endPoint);
+        modelCore.roads.add(new Road(baseLine));
+
+        /*
+        double a=-1/baseLine.getSlope();
+        double b=endPoint.y-a*endPoint.x;
+        int BASIC_ROAD_WIDTH=10;
+
+        double eltolasMerteke=Math.sqrt(BASIC_ROAD_WIDTH / (1+Math.pow(a,2)) );
+
+        System.err.println("Eltolas merteke: "+eltolasMerteke );
+        Line leftEdge = baseLine.getTransformBy(eltolasMerteke,eltolasMerteke*a);
+        Line rightEdge=baseLine;
+
+        Line perpendicular= new Line(new Point(endPoint.x,a*endPoint.x+b),new Point(endPoint.x+eltolasMerteke,a*(endPoint.x+eltolasMerteke)+b));
+        Road r2= new Road(perpendicular,perpendicular,Color.RED);
+        modelCore.roads.add(r2);
+
+        System.out.println("Baseline: " + baseLine);
+        System.out.println("Perpendicular: " + perpendicular);
+        System.out.println("Left edge: " + leftEdge);
+        System.out.println("Right edge: " + rightEdge);
+
+        Road r= new Road(leftEdge,rightEdge);
+        modelCore.roads.add(r);*/
+
+        System.out.println("Road ended in point: " + endPoint);
+    }
+
+    /*
+    private void createRoad(int x, int y){
+        System.out.println(x+","+y);
+        if(roadStarted){
+            Point endPoint=new Point(x,y);
+            Line left=new Line(startPoint,endPoint);
+            Road r= new Road(left,left.ifMove90(Road.DEFAULT_WIDTH));
+            modelCore.roads.add(r);
+
+            add(r);
+            System.out.println(r);
+            roadStarted=false;
+            System.out.println("Road ended");
+
+        }else{
+            startPoint=new Point(x,y);
+            roadStarted=true;
+            System.out.println("Road started");
+        }
+        revalidate();
+        repaint();
+    }*/
+
 
     @Override
     protected void paintComponent(Graphics graphics) {
         super.paintComponent(graphics);
-        Graphics2D g=(Graphics2D) graphics;
-        g.setColor(Color.BLACK);
-        //g.drawLine(50,50,60,60);
-        for(Road r:modelCore.roads){
-            double width=Point.getDistance(r.leftEdgeLine.start,r.rightEdgeLine.start);
-            double height=Point.getDistance(r.leftEdgeLine.start,r.leftEdgeLine.end);
-/*
-            g.fillRect(r.leftEdgeLine.start.x,r.leftEdgeLine.start.y,
-                    (int) Math.round(width),
-                    (int) Math.round(height));*/
-
-            // draw GeneralPath (polygon)
-            int[] x1Points = {r.leftEdgeLine.start.x, r.leftEdgeLine.end.x, r.rightEdgeLine.end.x,r.rightEdgeLine.start.x};
-            int[] y1Points = {r.leftEdgeLine.start.y, r.leftEdgeLine.end.y, r.rightEdgeLine.end.y,r.rightEdgeLine.start.y};
-            GeneralPath polygon =
-                    new GeneralPath(GeneralPath.WIND_EVEN_ODD,
-                            x1Points.length);
-            polygon.moveTo(x1Points[0], y1Points[0]);
-
-            for (int index = 1; index < x1Points.length; index++) {
-                polygon.lineTo(x1Points[index], y1Points[index]);
-            }
-
-            polygon.closePath();
-            g.fill(polygon);
+        //graphics.drawLine(10,10,40,40);
+        //System.out.println(modelCore.roads.size());
+        for(Road r : modelCore.roads){
+            r.paint(graphics);
         }
-        
-        /*
-        for(Road r:modelCore.roads){
-            for(RoadSlice slice:r.roadSlices){
-                //g.setColor(slice.getColor());
-                //g.fillRect(r.baseLine.x1,,slice.width(),r.getHeight());
-
-            }
-
-
-            g.setColor(Color.RED);
-            //g.drawLine(r.baseLine.x1,r.baseLine.y1,r.baseLine.x2,r.baseLine.y2);
+        if(Objects.nonNull(modelCore.temporaryRoad)){
+            modelCore.temporaryRoad.paint(graphics);
         }
-*/
-
     }
 }

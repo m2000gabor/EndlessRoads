@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 
 public class MainWindow extends JFrame {
     GameField field;
+
     public MainWindow() throws HeadlessException {
         field=new GameField();
 
