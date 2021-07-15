@@ -67,7 +67,7 @@ public class GameField extends JPanel {
     private void startRoad(int x, int y){
         startPoint= new Point(x,y);
         endPoint= new Point(x,y);
-        System.out.println("Road started in point: " + startPoint);
+        //System.out.println("Road started in point: " + startPoint);
     }
 
     private void changeTemporaryShadow(int x, int y){
@@ -81,59 +81,16 @@ public class GameField extends JPanel {
         Line baseLine=new Line(startPoint,endPoint);
         modelCore.roads.add(new Road(baseLine));
 
-        /*
-        double a=-1/baseLine.getSlope();
-        double b=endPoint.y-a*endPoint.x;
-        int BASIC_ROAD_WIDTH=10;
-
-        double eltolasMerteke=Math.sqrt(BASIC_ROAD_WIDTH / (1+Math.pow(a,2)) );
-
-        System.err.println("Eltolas merteke: "+eltolasMerteke );
-        Line leftEdge = baseLine.getTransformBy(eltolasMerteke,eltolasMerteke*a);
-        Line rightEdge=baseLine;
-
-        Line perpendicular= new Line(new Point(endPoint.x,a*endPoint.x+b),new Point(endPoint.x+eltolasMerteke,a*(endPoint.x+eltolasMerteke)+b));
-        Road r2= new Road(perpendicular,perpendicular,Color.RED);
-        modelCore.roads.add(r2);
-
-        System.out.println("Baseline: " + baseLine);
-        System.out.println("Perpendicular: " + perpendicular);
-        System.out.println("Left edge: " + leftEdge);
-        System.out.println("Right edge: " + rightEdge);
-
-        Road r= new Road(leftEdge,rightEdge);
-        modelCore.roads.add(r);*/
-
-        System.out.println("Road ended in point: " + endPoint);
+        //System.out.println("Road ended in point: " + endPoint);
     }
-
-    /*
-    private void createRoad(int x, int y){
-        System.out.println(x+","+y);
-        if(roadStarted){
-            Point endPoint=new Point(x,y);
-            Line left=new Line(startPoint,endPoint);
-            Road r= new Road(left,left.ifMove90(Road.DEFAULT_WIDTH));
-            modelCore.roads.add(r);
-
-            add(r);
-            System.out.println(r);
-            roadStarted=false;
-            System.out.println("Road ended");
-
-        }else{
-            startPoint=new Point(x,y);
-            roadStarted=true;
-            System.out.println("Road started");
-        }
-        revalidate();
-        repaint();
-    }*/
 
     public void userInput(MainWindow.MenuInput in){
         switch (in){
             case NEW_BASIC_LANE:
-                if(mode==MouseMode.NONE){mode=MouseMode.ROAD_PLACING_0;}
+                if(mode==MouseMode.NONE){mode=MouseMode.ROAD_PLACING_0;
+                }else{
+                    System.err.println("It's not in NONE mode, but only NONE mode can be changed!");
+                }
                 break;
             default: break;
         }
