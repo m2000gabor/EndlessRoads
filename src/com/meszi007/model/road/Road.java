@@ -1,19 +1,23 @@
 package com.meszi007.model.road;
 
 import com.meszi007.model.Line;
+import com.meszi007.model.connections.Connection;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Path2D;
+import java.util.Objects;
 
 public class Road {
     public static final int BASIC_ROAD_WIDTH =5;
     public static final Color color= Color.black;
 
-    private Line baseLine;
+    @NotNull private Line baseLine;
     private Line leftEdgeLine;
     private Line rightEdgeLine;
+    private Connection startConnection;
+    private Connection endConnection;
 
     public Road(@NotNull Line baseLine){
         this.baseLine=baseLine;
@@ -83,16 +87,41 @@ public class Road {
         g.fill(polygon);
     }
 
+    public void setConnection(Connection c){
+        if(c.getFocusPoint().includesPoint(this.baseLine.start)){
+            startConnection=c;
+        }else if(c.getFocusPoint().includesPoint(this.baseLine.end)){
+            endConnection=c;
+        }else{
+            throw new IllegalStateException("This connection doesnt contains this road.");
+        }
+    }
+
+    public Connection getStartConnection(){return startConnection;}
+    public Connection getEndConnection(){return endConnection;}
+
     public Line getLeftEdgeLine() {
         return leftEdgeLine;
     }
-
     public Line getRightEdgeLine() {
         return rightEdgeLine;
     }
 
-    public Line getBaseLine() {
+    public @NotNull Line getBaseLine() {
         return baseLine;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Road road = (Road) o;
+        return baseLine.equals(road.baseLine) && Objects.equals(leftEdgeLine, road.leftEdgeLine) && Objects.equals(rightEdgeLine, road.rightEdgeLine);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(baseLine, leftEdgeLine, rightEdgeLine);
     }
 
     @Override

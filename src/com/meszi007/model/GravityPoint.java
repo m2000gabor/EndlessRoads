@@ -23,5 +23,6 @@ public class GravityPoint extends Point{
         java.awt.geom.Ellipse2D circle= new Ellipse2D.Float(this.x-radius,this.y-radius,radius*2,radius*2);
         return circle.contains(x,y);
     }
+    public boolean includesPoint(Point p){return includesPoint(p.x,p.y);}
 
 }
