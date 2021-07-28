@@ -16,10 +16,10 @@ public class TwoTwoRoad extends Road{
 
     @Override
     public void setupLanes() {
+        @SuppressWarnings("SuspiciousNameCombination")
         Vector v =new Vector(getBaseLine().getAsVector().y*-1,getBaseLine().getAsVector().x);
         v=v.normVectorToLength(Lane.LANE_WIDTH);
         lanes.add(new Lane(getBaseLine().getTransformBy(v.x,v.y)));
-
 
         //v=v.normVectorToLength(Lane.LANE_WIDTH);
         v=new Vector(v.x*-1,v.y*-1);

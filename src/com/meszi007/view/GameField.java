@@ -53,7 +53,7 @@ public class GameField extends JPanel {
                             }else if(findRoadInLocation(e.getX(), e.getY()).isPresent()){
                                 System.out.println("Its a road");
                             }else{
-                                System.out.println("Nothing found int this point");
+                                System.out.println("Nothing found in this point");
                             }
 
                             break;
@@ -61,10 +61,10 @@ public class GameField extends JPanel {
                             Optional<Road> opt= findRoadInLocation(e.getX(), e.getY());
                             if(opt.isPresent()){
                                 modelCore.roads.remove(opt.get());
-                                System.out.println("A kivalasztott elem torolve");
+                                System.out.println("selected road deleted");
 
                             }else{
-                                System.out.println("Nincs mit torolni");
+                                System.out.println("Nothing to delete");
                             }
                             mode=MouseMode.DEMOLISHING;
                             break;
@@ -174,17 +174,17 @@ public class GameField extends JPanel {
 
     public void userInput(MenuInput in){
         if (in.isRoad()) {
-            if (mode == MouseMode.NONE) {
+            if (mode == MouseMode.NONE || mode== MouseMode.ROAD_PLACING_0) {
                 mode = MouseMode.ROAD_PLACING_0;
                 roadType = in;
             } else {
-                System.err.println("It's not in NONE mode, but only NONE mode can be changed!");
+                System.err.println("This mode cannot be changed!");
             }
         } else if (in.isDemolish()) {
-            if (mode == MouseMode.NONE) {
+            if (mode == MouseMode.NONE|| mode== MouseMode.ROAD_PLACING_0) {
                 mode = MouseMode.DEMOLISHING;
             } else {
-                System.err.println("It's not in NONE mode, but only NONE mode can be changed!");
+                System.err.println("This mode cannot be changed!");
             }
         }else{
             modelCore.temporaryRoad=null;
