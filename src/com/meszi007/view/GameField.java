@@ -24,6 +24,7 @@ public class GameField extends JPanel {
     private MenuInput roadType;
 
     public GameField() {
+        setBackground(Color.white);
         modelCore=new ModelCore();
 
         setPreferredSize(new Dimension(500,500));
@@ -197,5 +198,7 @@ public class GameField extends JPanel {
         if(Objects.nonNull(modelCore.temporaryRoad)){
             modelCore.temporaryRoad.paint(graphics);
         }
+
+        //for (Connection c : modelCore.connections){c.paint(graphics);}
     }
 }

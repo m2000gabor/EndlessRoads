@@ -1,6 +1,5 @@
 package com.meszi007.model.road;
 
-import com.meszi007.model.connections.Connection;
 import com.meszi007.model.geometry.Line;
 import com.meszi007.model.geometry.LineIterator;
 import com.meszi007.view.ArrowDrawer;
@@ -9,28 +8,22 @@ import org.jetbrains.annotations.NotNull;
 import java.awt.*;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Path2D;
-import java.util.ArrayList;
 import java.util.Objects;
 
-public abstract class Road {
-    public static final Color color = Color.black;
+public class Lane{
+    public static final Color color= Color.gray;
+    public static final int LANE_WIDTH =5;
 
     @NotNull private Line baseLine;
     private Line leftEdgeLine;
     private Line rightEdgeLine;
-    private Connection startConnection;
-    private Connection endConnection;
-    protected final ArrayList<Lane> lanes;
 
-    public Road(@NotNull Line baseLine){
+    public Lane(@NotNull Line baseLine){
         this.baseLine=baseLine;
-        this.lanes=new ArrayList<Lane>();
-        setupLanes();
         setupEdges();
     }
 
-    public abstract void setupLanes();
-    public abstract int getDefaultWidth();
+    public int getDefaultWidth(){return LANE_WIDTH;}
 
     private void setupEdges(){
         double vec_x=baseLine.end.x-baseLine.start.x;
@@ -46,8 +39,6 @@ public abstract class Road {
 
     public void changeBaseline(@NotNull Line baseLine){
         this.baseLine=baseLine;
-        lanes.clear();
-        setupLanes();
         setupEdges();
     }
 
@@ -94,10 +85,9 @@ public abstract class Road {
         }
 
         polygon.closePath();
-        //g.fill(polygon);
-        g.draw(polygon);
-        for(Lane l:lanes){l.paint(g);}
-        //drawArrows(g);
+        g.fill(polygon);
+
+        drawArrows(g);
     }
 
     private void drawArrows(Graphics2D g){
@@ -110,18 +100,6 @@ public abstract class Road {
         }
     }
 
-    public void setConnection(Connection c){
-        if(c.getFocusPoint().includesPoint(this.baseLine.start)){
-            startConnection=c;
-        }else if(c.getFocusPoint().includesPoint(this.baseLine.end)){
-            endConnection=c;
-        }else{
-            throw new IllegalStateException("This connection doesnt contains this road.");
-        }
-    }
-
-    public Connection getStartConnection(){return startConnection;}
-    public Connection getEndConnection(){return endConnection;}
 
     public Line getLeftEdgeLine() {
         return leftEdgeLine;
@@ -138,8 +116,8 @@ public abstract class Road {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Road road = (Road) o;
-        return baseLine.equals(road.baseLine) && Objects.equals(leftEdgeLine, road.leftEdgeLine) && Objects.equals(rightEdgeLine, road.rightEdgeLine);
+        Lane lane = (Lane) o;
+        return baseLine.equals(lane.baseLine) && Objects.equals(leftEdgeLine, lane.leftEdgeLine) && Objects.equals(rightEdgeLine, lane.rightEdgeLine);
     }
 
     @Override
@@ -148,10 +126,10 @@ public abstract class Road {
     }
 
     @Override
-    public String toString() {
-        return "Road{" +
-                ", leftEdgeLine=" + leftEdgeLine +
-                ", rightEdgeLine=" + rightEdgeLine +
-                '}';
-    }
+        public String toString() {
+            return "Lane{" +
+                    ", leftEdgeLine=" + leftEdgeLine +
+                    ", rightEdgeLine=" + rightEdgeLine +
+                    '}';
+        }
 }
