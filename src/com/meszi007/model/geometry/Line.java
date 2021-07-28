@@ -21,6 +21,10 @@ public class Line {
         return new Line(start.getTransformBy(x,y),end.getTransformBy(x,y));
     }
 
+    public Line getReversed(){
+        return new Line(end,start);
+    }
+
     public Vector getAsVector(){
         return new Vector(end.x - start.x,end.y-start.y);
     }

@@ -23,11 +23,11 @@ public class TwoTwoRoad extends Road{
 
         //v=v.normVectorToLength(Lane.LANE_WIDTH);
         v=new Vector(v.x*-1,v.y*-1);
-        lanes.add(new Lane(getBaseLine().getTransformBy(v.x,v.y)));
+        lanes.add(new Lane(getBaseLine().getTransformBy(v.x,v.y).getReversed()));
 
 
         v=v.normVectorToLength(Lane.LANE_WIDTH*3);
-        lanes.add(new Lane(getBaseLine().getTransformBy(v.x,v.y)));
+        lanes.add(new Lane(getBaseLine().getTransformBy(v.x,v.y).getReversed()));
 
         v=new Vector(v.x*-1,v.y*-1);
         //v=v.normVectorToLength(Lane.LANE_WIDTH*3);

@@ -21,7 +21,7 @@ public class OneOneRoad extends Road{
         v=v.normVectorToLength(Lane.LANE_WIDTH);
         lanes.add(new Lane(getBaseLine().getTransformBy(v.x,v.y)));
         v=new Vector(v.x*-1,v.y*-1);
-        lanes.add(new Lane(getBaseLine().getTransformBy(v.x,v.y)));
+        lanes.add(new Lane(getBaseLine().getTransformBy(v.x,v.y).getReversed()));
     }
 
 }
