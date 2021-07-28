@@ -1,7 +1,7 @@
 package com.meszi007.view;
 
 public class MenuInput {
-    public enum State{DEMOLISH, NEW_BASIC_LANE, ONE_ONE_ROAD,TWO_TWO_ROAD};
+    public enum State{DEMOLISH, NEW_BASIC_LANE, ONE_ONE_ROAD,TWO_TWO_ROAD,INFO};
 
     private final State state;
 
@@ -26,6 +26,7 @@ public class MenuInput {
     public static MenuInput oneOneRoad(){return new MenuInput(State.ONE_ONE_ROAD);}
     public static MenuInput twoTwoRoad(){return new MenuInput(State.TWO_TWO_ROAD);}
     public static MenuInput demolish(){return new MenuInput(State.DEMOLISH);}
+    public static MenuInput info(){return new MenuInput(State.INFO);}
 
     public State getState() {
         return state;

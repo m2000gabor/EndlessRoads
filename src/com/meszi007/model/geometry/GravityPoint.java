@@ -9,6 +9,9 @@ public class GravityPoint extends Point{
     public GravityPoint(Point p){
         super(p.x,p.y);
     }
+    public GravityPoint(double x, double y){
+        this(new Point(x,y));
+    }
 
     public void paint(Graphics2D gr){
         paintPointAsGravityPoint(gr,this);

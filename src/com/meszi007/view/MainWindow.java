@@ -13,6 +13,10 @@ public class MainWindow extends JFrame {
 
         JMenuBar menuBar=new JMenuBar();
 
+        JButton infoMenuItem=new JButton("Info");
+        infoMenuItem.addActionListener(e -> {field.userInput(MenuInput.info());});
+        menuBar.add(infoMenuItem);
+
         JButton road22EdgeMenuItem=new JButton("2-2 lane road");
         road22EdgeMenuItem.addActionListener(e -> {field.userInput(MenuInput.twoTwoRoad());});
         menuBar.add(road22EdgeMenuItem);

@@ -40,15 +40,20 @@ public class GameField extends JPanel {
                         case ROAD_PLACING_START_PLACED:
                             finishRoad(e.getX(), e.getY());
                             modelCore.temporaryRoad = null;
-                            mode = MouseMode.NONE;
+                            mode = MouseMode.ROAD_PLACING_0;
                             break;
                         case NONE:
                             if(findGPInLocation(e.getX(), e.getY()).isPresent()){
-                                System.out.println("Van itt egy GP");
+                                if(modelCore.connections.stream().anyMatch(c -> c.getFocusPoint().includesPoint(new Point(e.getX(),e.getY()))) ){
+                                    System.out.println("Its a connection");
+                                }else{
+                                    System.out.println("Its a GravityPoint");
+                                }
+
                             }else if(findRoadInLocation(e.getX(), e.getY()).isPresent()){
-                                System.out.println("Van itt egy ut");
+                                System.out.println("Its a road");
                             }else{
-                                System.out.println("Nincs itt semmi");
+                                System.out.println("Nothing found int this point");
                             }
 
                             break;
@@ -61,7 +66,7 @@ public class GameField extends JPanel {
                             }else{
                                 System.out.println("Nincs mit torolni");
                             }
-                            mode=MouseMode.NONE;
+                            mode=MouseMode.DEMOLISHING;
                             break;
 
                     }
@@ -181,6 +186,9 @@ public class GameField extends JPanel {
             } else {
                 System.err.println("It's not in NONE mode, but only NONE mode can be changed!");
             }
+        }else{
+            modelCore.temporaryRoad=null;
+            mode = MouseMode.NONE;
         }
     }
 
