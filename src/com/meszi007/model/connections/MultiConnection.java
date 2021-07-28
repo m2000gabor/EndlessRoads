@@ -1,7 +1,7 @@
 package com.meszi007.model.connections;
 
-import com.meszi007.model.GravityPoint;
-import com.meszi007.model.Point;
+import com.meszi007.model.geometry.GravityPoint;
+import com.meszi007.model.geometry.Point;
 import com.meszi007.model.road.Road;
 
 import java.util.ArrayList;

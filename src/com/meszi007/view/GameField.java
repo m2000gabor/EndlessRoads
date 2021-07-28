@@ -1,10 +1,13 @@
 package com.meszi007.view;
 
-import com.meszi007.model.GravityPoint;
-import com.meszi007.model.Line;
 import com.meszi007.model.ModelCore;
-import com.meszi007.model.Point;
+import com.meszi007.model.geometry.GravityPoint;
+import com.meszi007.model.geometry.Line;
+import com.meszi007.model.geometry.Point;
+import com.meszi007.model.road.OneLaneRoad;
+import com.meszi007.model.road.OneOneRoad;
 import com.meszi007.model.road.Road;
+import com.meszi007.model.road.TwoTwoRoad;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,6 +21,7 @@ public class GameField extends JPanel {
     enum MouseMode{ROAD_PLACING_0,ROAD_PLACING_START_PLACED,DEMOLISHING,NONE}
     private final ModelCore modelCore;
     private MouseMode mode=MouseMode.NONE;
+    private MenuInput roadType;
 
     public GameField() {
         modelCore=new ModelCore();
@@ -107,13 +111,27 @@ public class GameField extends JPanel {
 
         if(Objects.isNull(startPoint)){
             startPoint=new Point(x,y);
-            modelCore.temporaryRoad=new Road(new Line(startPoint, startPoint));
+            modelCore.temporaryRoad=createAppropriateRoadType(roadType,startPoint,startPoint);
         }else{
-            modelCore.temporaryRoad=new Road(new Line(startPoint, startPoint));
+            modelCore.temporaryRoad=createAppropriateRoadType(roadType,startPoint,startPoint);
             modelCore.createJunction(modelCore.temporaryRoad,r);
             System.out.println("Road start connected");
         }
         //System.out.println("Road started in point: " + startPoint);
+    }
+
+    private static Road createAppropriateRoadType(MenuInput roadType,Point start, Point end){
+        if(!roadType.isRoad()) {throw new IllegalStateException("Only roads can be built");}
+        switch (roadType.getState()){
+            case ONE_ONE_ROAD:
+                return new OneOneRoad(new Line(start,end));
+            case NEW_BASIC_LANE:
+                return new OneLaneRoad(new Line(start,end));
+            case TWO_TWO_ROAD:
+                return new TwoTwoRoad(new Line(start,end));
+            default:
+                throw new IllegalStateException("Cannot build this type of road. Not implemented yet.");
+        }
     }
 
     private void changeTemporaryShadow(int x, int y){
@@ -148,21 +166,20 @@ public class GameField extends JPanel {
         //System.out.println("Road ended in point: " + endPoint);
     }
 
-    public void userInput(MainWindow.MenuInput in){
-        switch (in){
-            case NEW_BASIC_LANE:
-                if(mode==MouseMode.NONE){mode=MouseMode.ROAD_PLACING_0;
-                }else{
-                    System.err.println("It's not in NONE mode, but only NONE mode can be changed!");
-                }
-                break;
-            case DEMOLISH:
-                if(mode==MouseMode.NONE){mode=MouseMode.DEMOLISHING;
-                }else{
-                    System.err.println("It's not in NONE mode, but only NONE mode can be changed!");
-                }
-                break;
-            default: break;
+    public void userInput(MenuInput in){
+        if (in.isRoad()) {
+            if (mode == MouseMode.NONE) {
+                mode = MouseMode.ROAD_PLACING_0;
+                roadType = in;
+            } else {
+                System.err.println("It's not in NONE mode, but only NONE mode can be changed!");
+            }
+        } else if (in.isDemolish()) {
+            if (mode == MouseMode.NONE) {
+                mode = MouseMode.DEMOLISHING;
+            } else {
+                System.err.println("It's not in NONE mode, but only NONE mode can be changed!");
+            }
         }
     }
 

@@ -1,7 +1,9 @@
 package com.meszi007.model.road;
 
-import com.meszi007.model.Line;
 import com.meszi007.model.connections.Connection;
+import com.meszi007.model.geometry.Line;
+import com.meszi007.model.geometry.LineIterator;
+import com.meszi007.view.ArrowDrawer;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
@@ -9,8 +11,7 @@ import java.awt.geom.GeneralPath;
 import java.awt.geom.Path2D;
 import java.util.Objects;
 
-public class Road {
-    public static final int BASIC_ROAD_WIDTH =5;
+public abstract class Road {
     public static final Color color= Color.black;
 
     @NotNull private Line baseLine;
@@ -24,12 +25,14 @@ public class Road {
         setupEdges();
     }
 
+    public abstract int getDefaultWidth();
+
     private void setupEdges(){
         double vec_x=baseLine.end.x-baseLine.start.x;
         double vec_y=baseLine.end.y-baseLine.start.y;
         double perp_x=-1*vec_y;
         double perp_y=vec_x;
-        double ratio_to_norm_with = BASIC_ROAD_WIDTH/Math.sqrt(Math.pow(perp_x,2)+Math.pow(perp_y,2));
+        double ratio_to_norm_with = getDefaultWidth()/Math.sqrt(Math.pow(perp_x,2)+Math.pow(perp_y,2));
         perp_x*=ratio_to_norm_with;
         perp_y*=ratio_to_norm_with;
         leftEdgeLine = baseLine.getTransformBy(perp_x,perp_y);
@@ -85,6 +88,18 @@ public class Road {
 
         polygon.closePath();
         g.fill(polygon);
+
+        drawArrows(g);
+    }
+
+    private void drawArrows(Graphics2D g){
+        g.setColor(Color.ORANGE);
+        LineIterator it = new LineIterator(getBaseLine());
+        it.first();
+        while(!it.end()){
+            g.fill(ArrowDrawer.createArrowShape(new Point(it.current().start.x,it.current().start.y),new Point(it.current().end.x,it.current().end.y)));
+            it.next();
+        }
     }
 
     public void setConnection(Connection c){

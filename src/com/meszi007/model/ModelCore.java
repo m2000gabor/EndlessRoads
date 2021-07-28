@@ -2,6 +2,7 @@ package com.meszi007.model;
 
 import com.meszi007.model.connections.Connection;
 import com.meszi007.model.connections.MultiConnection;
+import com.meszi007.model.geometry.Point;
 import com.meszi007.model.road.Road;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

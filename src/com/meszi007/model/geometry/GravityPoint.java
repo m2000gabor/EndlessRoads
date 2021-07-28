@@ -1,4 +1,4 @@
-package com.meszi007.model;
+package com.meszi007.model.geometry;
 
 import java.awt.*;
 import java.awt.geom.Ellipse2D;

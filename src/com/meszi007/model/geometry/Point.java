@@ -1,4 +1,4 @@
-package com.meszi007.model;
+package com.meszi007.model.geometry;
 
 import java.util.Objects;
 
@@ -16,9 +16,8 @@ public class Point {
         this.y = (int) Math.round(y);
     }
 
-    public Point ifMove90(int l){
-        int d=(int) Math.round(1/(Math.sqrt(2)))*l;
-        return new Point(x+d,y);
+    public Point getMoved(Vector v){
+        return new Point(x+v.x,y+v.y);
     }
 
     public static double getDistance(Point a, Point b){

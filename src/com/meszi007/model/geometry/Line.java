@@ -1,4 +1,7 @@
-package com.meszi007.model;
+package com.meszi007.model.geometry;
+
+
+import java.awt.geom.Line2D;
 
 public class Line {
     final public Point start;
@@ -14,16 +17,17 @@ public class Line {
         this.end = end;
     }
 
-    public Line ifMove90(int l){
-        return new Line(start.ifMove90(l),end.ifMove90(l));
-    }
-
     public Line getTransformBy(double x, double y){
         return new Line(start.getTransformBy(x,y),end.getTransformBy(x,y));
     }
 
+    public Vector getAsVector(){
+        return new Vector(getSlope(),getBalance());
+    }
+
+    public Line2D getAsLine2d(){return new Line2D.Float(this.start.x,this.start.y,this.end.x,this.end.y);}
+
     /**
-     *
      * @return meredekség
      */
     public double getSlope(){
