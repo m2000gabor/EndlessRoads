@@ -22,9 +22,9 @@ public class ModelCore {
 
     public void createJunction(Road r1,Road r2){
         Point p=null;
-        if(r1.getBaseLine().start == r2.getBaseLine().start || r1.getBaseLine().start == r2.getBaseLine().end){
+        if(r1.getBaseLine().start.equals(r2.getBaseLine().start) || r1.getBaseLine().start.equals(r2.getBaseLine().end)){
             p=r1.getBaseLine().start;
-        }else if(r1.getBaseLine().end == r2.getBaseLine().start || r1.getBaseLine().end == r2.getBaseLine().end){
+        }else if(r1.getBaseLine().end.equals(r2.getBaseLine().start) || r1.getBaseLine().end.equals(r2.getBaseLine().end)){
             p=r1.getBaseLine().end;
         }
         if(Objects.isNull(p)){
