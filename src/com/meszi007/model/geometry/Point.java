@@ -16,6 +16,11 @@ public class Point {
         this.y = (int) Math.round(y);
     }
 
+    public Point(Point p){
+        this.x=p.x;
+        this.y=p.y;
+    }
+
     public Point getMoved(Vector v){
         return new Point(x+v.x,y+v.y);
     }

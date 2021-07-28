@@ -13,8 +13,8 @@ public class Line {
     }
 
     public Line(Point start, Point end) {
-        this.start = start;
-        this.end = end;
+        this.start = new Point(start);
+        this.end = new Point(end);
     }
 
     public Line getTransformBy(double x, double y){
@@ -22,10 +22,15 @@ public class Line {
     }
 
     public Vector getAsVector(){
-        return new Vector(getSlope(),getBalance());
+        return new Vector(end.x - start.x,end.y-start.y);
     }
 
     public Line2D getAsLine2d(){return new Line2D.Float(this.start.x,this.start.y,this.end.x,this.end.y);}
+
+    public boolean contains(Point p){
+        Line2D line2D = new Line2D.Float(this.start.x, this.start.y,this.end.x,this.end.y);
+        return line2D.getBounds().contains(p.x, p.y);
+    }
 
     /**
      * @return meredekség
@@ -43,8 +48,8 @@ public class Line {
     public String toString() {
         return "Line{" +
                 "x1=" + start.x +
-                ", x2=" + start.y +
-                ", y1=" + end.x +
+                ", y1=" + start.y +
+                ", x2=" + end.x +
                 ", y2=" + end.y +
                 '}';
     }
