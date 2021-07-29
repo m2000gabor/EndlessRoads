@@ -1,6 +1,6 @@
 package com.meszi007;
 
-import com.meszi007.view.MainWindow;
+import com.meszi007.view.TestSwingGuiForm;
 
 import javax.swing.*;
 
@@ -21,6 +21,12 @@ public class Main {
             e.printStackTrace();
         }
 
-        MainWindow m= new MainWindow();
+        //MainWindow m= new MainWindow();
+        JFrame frame = new JFrame("TestSwingGuiForm");
+        frame.setContentPane(new TestSwingGuiForm().base);
+        frame.setTitle("Endless Roads");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        frame.setVisible(true);
     }
 }

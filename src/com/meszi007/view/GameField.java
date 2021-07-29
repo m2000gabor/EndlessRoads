@@ -27,7 +27,7 @@ public class GameField extends JPanel {
         setBackground(Color.white);
         modelCore=new ModelCore();
 
-        setPreferredSize(new Dimension(500,500));
+        //setPreferredSize(new Dimension(500,500));
 
         addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
