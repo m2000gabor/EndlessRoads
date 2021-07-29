@@ -3,25 +3,17 @@ package com.meszi007.view;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 
-public class ArrowDrawer {
-    public static Shape createArrowShape(Point fromPt, Point toPt) {
+public class LineDrawer {
+    public static Shape getShape(int x1,int y1,int x2, int y2){
+        return getShape(new Point(x1,y1),new Point(x2,y2));
+    }
+    public static Shape getShape(Point fromPt, Point toPt) {
         Polygon arrowPolygon = new Polygon();
-        /*
-        arrowPolygon.addPoint(-6,1);
-        arrowPolygon.addPoint(3,1);
-        arrowPolygon.addPoint(3,3);
-        arrowPolygon.addPoint(6,0);
-        arrowPolygon.addPoint(3,-3);
-        arrowPolygon.addPoint(3,-1);
-        arrowPolygon.addPoint(-6,-1);*/
 
-        arrowPolygon.addPoint(-6,1);
-        arrowPolygon.addPoint(3,1);
-        arrowPolygon.addPoint(3,5);
-        arrowPolygon.addPoint(8,0);
-        arrowPolygon.addPoint(3,-5);
-        arrowPolygon.addPoint(3,-1);
-        arrowPolygon.addPoint(-6,-1);
+        arrowPolygon.addPoint(-6,2);
+        arrowPolygon.addPoint(-6,0);
+        arrowPolygon.addPoint(0,0);
+        arrowPolygon.addPoint(0,2);
 
 
         Point midPoint = midpoint(fromPt, toPt);

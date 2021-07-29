@@ -17,8 +17,9 @@ public class OneOneRoad extends Road{
 
     @Override
     public void setupLanes() {
+        @SuppressWarnings("SuspiciousNameCombination")
         Vector v =new Vector(getBaseLine().getAsVector().y*-1,getBaseLine().getAsVector().x);
-        v=v.normVectorToLength(Lane.LANE_WIDTH);
+        v=v.normVectorToLength(Lane.LANE_WIDTH/2.0);
         lanes.add(new Lane(getBaseLine().getTransformBy(v.x,v.y)));
         v=new Vector(v.x*-1,v.y*-1);
         lanes.add(new Lane(getBaseLine().getTransformBy(v.x,v.y).getReversed()));

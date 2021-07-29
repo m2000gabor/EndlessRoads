@@ -14,4 +14,8 @@ public class Vector {
         double multiplier=length/currentLength;
         return new Vector(x*multiplier, y*multiplier);
     }
+
+    public int getLength(){
+        return (int) Math.round(Math.sqrt( Math.pow(x,2) + Math.pow(y,2)));
+    }
 }

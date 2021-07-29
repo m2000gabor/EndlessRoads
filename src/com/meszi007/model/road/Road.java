@@ -2,22 +2,15 @@ package com.meszi007.model.road;
 
 import com.meszi007.model.connections.Connection;
 import com.meszi007.model.geometry.Line;
-import com.meszi007.model.geometry.LineIterator;
-import com.meszi007.view.ArrowDrawer;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 import java.awt.geom.GeneralPath;
-import java.awt.geom.Path2D;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public abstract class Road {
-    public static final Color color = Color.black;
+public abstract class Road extends RoadSurface{
 
-    @NotNull private Line baseLine;
-    private Line leftEdgeLine;
-    private Line rightEdgeLine;
     private Connection startConnection;
     private Connection endConnection;
     protected final ArrayList<Lane> lanes;
@@ -25,50 +18,24 @@ public abstract class Road {
     public Road(@NotNull Line baseLine){
         this.baseLine=baseLine;
         this.lanes=new ArrayList<Lane>();
-        setupLanes();
         setupEdges();
+        setupLanes();
     }
 
     public abstract void setupLanes();
-    public abstract int getDefaultWidth();
 
-    private void setupEdges(){
-        double vec_x=baseLine.end.x-baseLine.start.x;
-        double vec_y=baseLine.end.y-baseLine.start.y;
-        double perp_x=-1*vec_y;
-        double perp_y=vec_x;
-        double ratio_to_norm_with = getDefaultWidth()/Math.sqrt(Math.pow(perp_x,2)+Math.pow(perp_y,2));
-        perp_x*=ratio_to_norm_with;
-        perp_y*=ratio_to_norm_with;
-        leftEdgeLine = baseLine.getTransformBy(perp_x,perp_y);
-        rightEdgeLine= baseLine.getTransformBy(-1*perp_x,-1*perp_y);
+    @Override
+    public Color getColor() {
+        return Color.black;
     }
 
     public void changeBaseline(@NotNull Line baseLine){
         this.baseLine=baseLine;
         lanes.clear();
-        setupLanes();
         setupEdges();
+        setupLanes();
     }
 
-    public boolean includePoint(int x, int y){
-        return getAsPath().contains(new Point(x,y));
-    };
-
-    private Path2D getAsPath(){
-        Path2D.Float p = new Path2D.Float();
-        p.moveTo(leftEdgeLine.start.x,leftEdgeLine.start.y);
-        p.lineTo(leftEdgeLine.end.x, leftEdgeLine.end.y);
-        p.lineTo(rightEdgeLine.end.x,rightEdgeLine.end.y);
-        p.lineTo(rightEdgeLine.start.x,rightEdgeLine.start.y);
-        p.closePath();
-        return p;
-    }
-
-    private boolean hasNoWidth(){
-        return leftEdgeLine.start.x == rightEdgeLine.start.x && leftEdgeLine.end.x==rightEdgeLine.end.x &&
-                leftEdgeLine.start.y == rightEdgeLine.start.y && leftEdgeLine.end.y==rightEdgeLine.end.y;
-    }
 
     private void drawAsLine(Graphics2D g){
         g.setColor(Color.RED);
@@ -78,7 +45,7 @@ public abstract class Road {
     public void paint(Graphics graphics) {
 
         Graphics2D g=(Graphics2D) graphics;
-        g.setColor(color);
+        g.setColor(getColor());
 
         // draw GeneralPath (polygon)
         int[] x1Points = {leftEdgeLine.start.x, leftEdgeLine.end.x, rightEdgeLine.end.x,rightEdgeLine.start.x};
@@ -96,19 +63,29 @@ public abstract class Road {
         polygon.closePath();
         //g.fill(polygon);
         g.draw(polygon);
-        for(Lane l:lanes){l.paint(g);}
+        Lane middle= findNoDashingLane(lanes);
+        for(Lane l:lanes){ l.paint(g);
+            if(Objects.nonNull(middle) && !l.equals(middle)){l.drawDashedLine(g);}
+        }
         //drawArrows(g);
     }
 
-    private void drawArrows(Graphics2D g){
-        g.setColor(Color.ORANGE);
-        LineIterator it = new LineIterator(getBaseLine());
-        it.first();
-        while(!it.end()){
-            g.fill(ArrowDrawer.createArrowShape(new Point(it.current().start.x,it.current().start.y),new Point(it.current().end.x,it.current().end.y)));
-            it.next();
+    private static Lane findNoDashingLane(ArrayList<Lane> lanes){
+        if(Objects.isNull(lanes) || lanes.isEmpty() || lanes.size()==1){return null;}
+
+        /*
+        One-way road: last one dont need.
+        Two-way: when direction changes, that one doesnt need.
+         */
+        int i= 1;
+        while(! lanes.get(i).getRightEdgeLine().start.equals(lanes.get(i-1).getRightEdgeLine().end)){
+            if(i==lanes.size()-1){break;}
+            i++;
         }
+
+        return lanes.get(i);
     }
+
 
     public void setConnection(Connection c){
         if(c.getFocusPoint().includesPoint(this.baseLine.start)){
@@ -123,29 +100,7 @@ public abstract class Road {
     public Connection getStartConnection(){return startConnection;}
     public Connection getEndConnection(){return endConnection;}
 
-    public Line getLeftEdgeLine() {
-        return leftEdgeLine;
-    }
-    public Line getRightEdgeLine() {
-        return rightEdgeLine;
-    }
 
-    public @NotNull Line getBaseLine() {
-        return baseLine;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Road road = (Road) o;
-        return baseLine.equals(road.baseLine) && Objects.equals(leftEdgeLine, road.leftEdgeLine) && Objects.equals(rightEdgeLine, road.rightEdgeLine);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(baseLine, leftEdgeLine, rightEdgeLine);
-    }
 
     @Override
     public String toString() {
