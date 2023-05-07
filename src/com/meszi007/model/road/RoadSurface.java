@@ -1,14 +1,13 @@
 package com.meszi007.model.road;
 
 import com.meszi007.model.geometry.Line;
-import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 import java.awt.geom.Path2D;
 import java.util.Objects;
 
 public abstract class RoadSurface {
-    @NotNull protected Line baseLine;
+    protected Line baseLine;
     protected Line leftEdgeLine;
     protected Line rightEdgeLine;
 
@@ -19,7 +18,7 @@ public abstract class RoadSurface {
         return rightEdgeLine;
     }
 
-    public @NotNull Line getBaseLine() {
+    public Line getBaseLine() {
         return baseLine;
     }
 

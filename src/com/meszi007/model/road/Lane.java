@@ -4,7 +4,6 @@ import com.meszi007.model.geometry.Line;
 import com.meszi007.model.geometry.LineIterator;
 import com.meszi007.view.ArrowDrawer;
 import com.meszi007.view.LineDrawer;
-import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 import java.awt.geom.GeneralPath;
@@ -12,7 +11,7 @@ import java.awt.geom.GeneralPath;
 public class Lane extends RoadSurface{
     public static final int LANE_WIDTH =10;
 
-    public Lane(@NotNull Line baseLine){
+    public Lane(Line baseLine){
         this.baseLine=baseLine;
         setupEdges();
     }

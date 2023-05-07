@@ -2,7 +2,6 @@ package com.meszi007.model.road;
 
 import com.meszi007.model.connections.Connection;
 import com.meszi007.model.geometry.Line;
-import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 import java.awt.geom.GeneralPath;
@@ -15,9 +14,9 @@ public abstract class Road extends RoadSurface{
     private Connection endConnection;
     protected final ArrayList<Lane> lanes;
 
-    public Road(@NotNull Line baseLine){
+    public Road(Line baseLine){
         this.baseLine=baseLine;
-        this.lanes=new ArrayList<Lane>();
+        this.lanes= new ArrayList<>();
         setupEdges();
         setupLanes();
     }
@@ -29,7 +28,7 @@ public abstract class Road extends RoadSurface{
         return Color.black;
     }
 
-    public void changeBaseline(@NotNull Line baseLine){
+    public void changeBaseline(Line baseLine){
         this.baseLine=baseLine;
         lanes.clear();
         setupEdges();
@@ -74,8 +73,8 @@ public abstract class Road extends RoadSurface{
         if(Objects.isNull(lanes) || lanes.isEmpty() || lanes.size()==1){return null;}
 
         /*
-        One-way road: last one dont need.
-        Two-way: when direction changes, that one doesnt need.
+        One-way road: last one don't need.
+        Two-way: when direction changes, that one doesn't need.
          */
         int i= 1;
         while(! lanes.get(i).getRightEdgeLine().start.equals(lanes.get(i-1).getRightEdgeLine().end)){
@@ -93,7 +92,7 @@ public abstract class Road extends RoadSurface{
         }else if(c.getFocusPoint().includesPoint(this.baseLine.end)){
             endConnection=c;
         }else{
-            throw new IllegalStateException("This connection doesnt contains this road.");
+            throw new IllegalStateException("This connection doesn't contains this road.");
         }
     }
 

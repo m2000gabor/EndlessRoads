@@ -4,8 +4,6 @@ import com.meszi007.model.connections.Connection;
 import com.meszi007.model.connections.MultiConnection;
 import com.meszi007.model.geometry.Point;
 import com.meszi007.model.road.Road;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -51,7 +49,7 @@ public class ModelCore {
 
     }
 
-    private @Nullable Connection findConnection(@NotNull Road road,Point p) {
+    private Connection findConnection(Road road,Point p) {
         if(Objects.nonNull(road.getStartConnection()) && road.getStartConnection().getFocusPoint().includesPoint(p)){
             return road.getStartConnection();
         }else if(Objects.nonNull(road.getEndConnection()) && road.getEndConnection().getFocusPoint().includesPoint(p)){

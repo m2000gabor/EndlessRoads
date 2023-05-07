@@ -1,11 +1,10 @@
 package com.meszi007.model.road;
 
 import com.meszi007.model.geometry.Line;
-import org.jetbrains.annotations.NotNull;
 
 public class OneLaneRoad extends Road{
 
-    public OneLaneRoad(@NotNull Line baseLine) {
+    public OneLaneRoad(Line baseLine) {
         super(baseLine);
     }
 
